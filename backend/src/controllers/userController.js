@@ -2,9 +2,73 @@ import mongoose from 'mongoose';
 import { UserSchema } from '../models/userModels';
 import { ContactSchema } from '../models/userModels';
 
-
 const User = mongoose.model('User', UserSchema);
 const Contact = mongoose.model('Contact', ContactSchema);
+
+export const editContact = (req, res) => {
+	let contactId = req.body.contactId;
+
+	if (typeof contactId === 'undefined') {
+		res.json({message: "Contact ID needed to edit contact."});
+	} else if (typeof contactId === 'undefined') {
+		res.json({message: "User ID needed to edit contact."});
+	} else {
+		let filter = {_id: contactId};
+		let info = [req.body.firstname, req.body.lastname, req.body.phone, 
+			req.body.email, req.body.address, req.body.notes];
+		
+		for (let i = 0; i < info.length; i++) {
+			if (typeof info[i] === 'undefined')
+				info[i] = "";
+		}
+
+		let update = {
+			firstname: info[0],
+			lastname: info[1],
+			phone: info[2],
+			email: info[3],
+			address: info[4],
+			notes: info[5]
+		};
+
+		Contact.findOneAndUpdate(filter, update, function (err, contact) {
+			if (err) {
+				console.log(err);
+				res.json({message: "Error updating contact."});
+			} else {
+				res.json({message: "Succesfully updated contact."});
+			}
+		});
+	}
+}
+
+export const deleteContact = (req, res) => {
+	let contactId = req.body.contactId;
+
+	if (typeof contactId === 'undefined') {
+		res.json({message: "Contact ID needed to delete contact."});
+	} else {
+		Contact.findByIdAndDelete(contactId, function (err, contact) {
+			if (err) {
+				res.json({message: "Error trying to delete contact."});
+			} else {
+				res.json({message: "Sucessfully deleted contact."});
+			}
+		});
+	}
+}
+
+export const getAllContacts = (req, res) => {
+	let userId = req.body.id;
+
+	if (typeof userId === 'undefined') {
+		res.json({message: "ID needed to get contacts."});
+	} else {
+		Contact.find({userId: userId}).then((contacts) => {
+			res.json({messsage: "Getting all contacts successfully.", contacts: contacts});
+		});
+	}
+}
 
 export const addNewContact = (req, res) => {
 	let userId = req.body.id;
