@@ -11,9 +11,7 @@ const PORT = process.env.PORT;
 
 // MongoDB connection.
 mongoose.Promise = global.Promise;
-const MONGO_USER = process.env.MONGO_USERNAME;
-const MONGO_PASS = process.env.MONGO_PASSWORD;
-const URI = "mongodb+srv://" + MONGO_USER + ":" + MONGO_PASS + "@maincluster-bmnhf.mongodb.net/test?retryWrites=true&w=majority";
+const URI = process.env.MONGO_URI;
 mongoose.connect(URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 // BodyParser Setup:

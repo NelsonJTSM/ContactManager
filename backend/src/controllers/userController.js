@@ -1,7 +1,68 @@
 import mongoose from 'mongoose';
 import { UserSchema } from '../models/userModels';
+import { ContactSchema } from '../models/userModels';
+
 
 const User = mongoose.model('User', UserSchema);
+const Contact = mongoose.model('Contact', ContactSchema);
+
+export const addNewContact = (req, res) => {
+	let userId = req.body.id;
+
+	if (typeof userId === 'undefined') {
+		res.json({message: "ID needed to add contact."});
+	} else {
+		let info = [req.body.firstname, req.body.lastname, req.body.phone, 
+			req.body.email, req.body.address, req.body.notes];
+		
+		for (let i = 0; i < info.length; i++) {
+			if (typeof info[i] === 'undefined')
+				info[i] = "";
+		}
+
+		let newContact = new Contact({
+			_id: new mongoose.Types.ObjectId,
+			userId: userId,
+			firstname: info[0],
+			lastname: info[1],
+			phone: info[2],
+			email: info[3],
+			address: info[4],
+			notes: info[5]
+		});
+
+		newContact.save((err, user) => {
+			if (err) {
+				res.json({message: "Unknown error"});
+			} else {
+				res.send(user);
+			}
+		});
+	}
+}
+
+export const loginUser = (req, res) => {
+	let username = req.body.username;
+	let password = req.body.password;
+
+	if (typeof username === 'undefined') {
+		res.json({message: "Username required to login.", id: ""});
+	} else if (typeof password === 'undefined') {
+		res.json({message: "Password required to login.", id: ""});
+	} else {
+		User.findOne({'username' : username}, function (err, user) {
+			if (err) {
+				res.json({message: "Username does not exist", id: ""});
+			} else {
+				if (user.password == password) {
+					res.json({message: "Logged in", id: user._id});
+				} else {
+					res.json({message: "Incorrect password", id: ""});
+				}
+			}
+		});
+	}
+}
 
 export const addNewUser = (req, res) => {
 	let newUser = new User({

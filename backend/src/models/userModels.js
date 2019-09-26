@@ -22,3 +22,19 @@ export const UserSchema = new Schema({
 }, {
 	versionKey: false
 }).plugin(uniqueValidator);
+
+export const ContactSchema = new Schema({
+	_id: mongoose.Schema.Types.ObjectId,
+	userId: {
+		type: mongoose.Schema.Types.ObjectId,
+		required: true,
+	},
+	firstname: String,
+	lastname: String,
+	phone: String,
+	email: String,
+	address: String,
+	notes: String
+}, {
+	versionKey: false
+}).plugin(uniqueValidator);
